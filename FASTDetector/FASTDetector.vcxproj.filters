@@ -15,16 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="FastDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LLManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SIFTDetector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Downloads\kodim08_grayscale.png">
+    <Image Include="..\..\..\..\Downloads\1.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\..\..\Downloads\lena_full.jpg">
@@ -33,12 +38,18 @@
     <Image Include="..\..\..\..\Downloads\Lenna.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\..\Downloads\S1-im1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FastDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LLManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFTDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

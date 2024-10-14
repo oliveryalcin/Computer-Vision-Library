@@ -2,24 +2,45 @@
 #include <iostream>
 #include <array>
 
-class LLManager {
+// Class to manage subsets of the circle (the arcs) and organising combinations efficiently
+class Arcs {
 
 private:
 
-	struct Node {
-		Node* nextPtr;
-		Node* prevPtr;
-		int circleIndex;
+	static const int MAX_ARCS = 16; //if every pixel is an alternating series between brighter, darker, similar..
+	enum ArcType {
+		NA,
+		Darker,
+		Brighter,
+		Similar
 	};
 
-	class List {
+	int numOfPoints = 0;
+	int numOfArcs = 0;
 
-		int numOfNodes; // total number of nodes
-	};
+	typedef struct {
+		int startIndex = 0;
+		int endIndex = 0;
+		ArcType attributeType = NA;
+		int len = 0;
 
-
+	}Arc;
+	
+	std::array<Arc, MAX_ARCS> arcs;
 
 public:
+
+	Arcs();
+	void setArc(int startIdx, int endIdx);
+
+
+
+
+
+
+		
+
+
 
 
 

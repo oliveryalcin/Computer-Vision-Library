@@ -142,15 +142,18 @@
     <ClCompile Include="FastDetector.cpp" />
     <ClCompile Include="LLManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SIFTDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Downloads\kodim08_grayscale.png" />
+    <Image Include="..\..\..\..\Downloads\1.png" />
     <Image Include="..\..\..\..\Downloads\lena_full.jpg" />
     <Image Include="..\..\..\..\Downloads\Lenna.png" />
+    <Image Include="..\..\..\..\Downloads\S1-im1.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FastDetector.h" />
     <ClInclude Include="LLManager.h" />
+    <ClInclude Include="SIFTDetector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
