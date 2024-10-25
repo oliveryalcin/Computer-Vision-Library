@@ -18,9 +18,6 @@
     <ClCompile Include="FastDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LLManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SIFTDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,12 +29,6 @@
     <Image Include="..\..\..\..\Downloads\1.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\..\Downloads\lena_full.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\..\..\..\Downloads\Lenna.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\..\..\..\Downloads\S1-im1.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -46,10 +37,10 @@
     <ClInclude Include="FastDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LLManager.h">
+    <ClInclude Include="SIFTDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SIFTDetector.h">
+    <ClInclude Include="BRIEF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

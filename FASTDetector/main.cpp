@@ -2,6 +2,9 @@
 #include <iostream>
 #include "FastDetector.h"
 #include <chrono>  
+#include "BRIEF.h"
+#include <bitset>
+
 
 
 enum class DetectorType {
@@ -10,7 +13,7 @@ enum class DetectorType {
 };
 
 static void processImage(const std::string& imagePath, const int& fastThreshold, DetectorType detectorType) {
-    
+
     cv::Mat image = cv::imread(imagePath, cv::IMREAD_COLOR);
 
     if (image.empty()) {
@@ -23,15 +26,20 @@ static void processImage(const std::string& imagePath, const int& fastThreshold,
     grayImage.convertTo(grayImage, CV_8UC1); // For custom detector
     std::vector<cv::KeyPoint> keypoints;
     cv::Mat outputImage;
-    //keypoints.reserve(grayImage.rows * grayImage.cols);
+
+    BRIEF<256> descriptor(6);
+    auto result = ov::generatePattern<256>();
+
+    keypoints.reserve(grayImage.rows * grayImage.cols);
     try {
         auto start = std::chrono::high_resolution_clock::now();
 
         if (detectorType == DetectorType::Custom) {
-            // Custom FastDetector
-            FastDetector customDetector(grayImage, fastThreshold);
-           
+            FastDetector customDetector(grayImage, fastThreshold,result.first ,result.second);
+         
             customDetector.extractFeatures(keypoints);
+            std::vector<std::bitset<256>> descriptors = descriptor.generateDescriptor(keypoints, grayImage);
+
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> elapsedCustom = end - start;
             std::cout << "Custom FastDetector feature extraction for " << imagePath << " took " << elapsedCustom.count() << " seconds." << std::endl;
@@ -44,9 +52,10 @@ static void processImage(const std::string& imagePath, const int& fastThreshold,
             std::cout << "OpenCV FAST feature extraction for " << imagePath << " took " << elapsed.count() << " seconds." << std::endl;
         }
 
-        // Draw keypoints on the image
+        // Draw keypoints on the imaged
         cv::drawKeypoints(image, keypoints, outputImage, cv::Scalar(0, 255, 0), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS); // Green color
         cv::imshow(detectorType == DetectorType::Custom ? "Custom Detected Features: " : "Detected Features: " + imagePath, outputImage);
+
     }
     catch (const std::exception& e) {
         std::cerr << "Error: Feature extraction failed: " << e.what() << std::endl;
@@ -54,11 +63,11 @@ static void processImage(const std::string& imagePath, const int& fastThreshold,
 }
 
 int main() {
-    int fastThreshold = 30;  // You can adjust this threshold as needed
+    int fastThreshold = 70;  // You can adjust this threshold as needed
 
 
-    processImage("Lenna.png", fastThreshold, DetectorType::Custom);
-    processImage("Lenna.png", fastThreshold, DetectorType::OpenCV);
+    processImage("S1-im1.png", fastThreshold, DetectorType::Custom);
+    processImage("S1-im1.png", fastThreshold, DetectorType::OpenCV);
 
     cv::waitKey(0);
 
