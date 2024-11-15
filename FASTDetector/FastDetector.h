@@ -47,11 +47,8 @@ private:
 	const bool isValidArc(const int& startIndex, const int& y, const int& x, const bool& isPbrighter) const;
 	//void calculateGradients(const int& y, const int& x, double& Ix, double& Iy) const;
 	const double computeHarrisResponse(const double& Ix, const double& Iy) const;
-	void generateDescriptor(const int& nd, const int& x, const int& y, const double& angle);
-	double computeCentroidOrientation(const int& x, const int& y);
 	const double gradX(const int& x, const int& y) const;
 	const double gradY(const int& x, const int& y) const;
-	void savePixelCoordinates(const std::vector<std::pair<int, int>>& brighterPixels, const std::vector<std::pair<int, int>>& darkerPixels) const;
 
 public:
 
@@ -64,7 +61,7 @@ public:
 	*/
 
 	
-	FastDetector(const cv::Mat& image, const int& threshold, std::vector<PointPair> pattern, const int& descriptorSize);
+	FastDetector(const cv::Mat& image, const int& threshold);
 	void extractFeatures(std::vector<cv::KeyPoint>& keypoints);
 
 

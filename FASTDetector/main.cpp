@@ -35,7 +35,7 @@ static void processImage(const std::string& imagePath, const int& fastThreshold,
         auto start = std::chrono::high_resolution_clock::now();
 
         if (detectorType == DetectorType::Custom) {
-            FastDetector customDetector(grayImage, fastThreshold,result.first ,result.second);
+            FastDetector customDetector(grayImage, fastThreshold);
          
             customDetector.extractFeatures(keypoints);
             std::vector<std::bitset<256>> descriptors = descriptor.generateDescriptor(keypoints, grayImage);
@@ -66,8 +66,8 @@ int main() {
     int fastThreshold = 70;  // You can adjust this threshold as needed
 
 
-    processImage("S1-im1.png", fastThreshold, DetectorType::Custom);
-    processImage("S1-im1.png", fastThreshold, DetectorType::OpenCV);
+    processImage("S1-im2.png", fastThreshold, DetectorType::Custom);
+    processImage("S1-im2.png", fastThreshold, DetectorType::OpenCV);
 
     cv::waitKey(0);
 

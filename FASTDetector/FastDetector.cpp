@@ -6,21 +6,22 @@
 #include <random>
 #include <string.h>
 #include <bitset>
-
+#include <algorithm>
 #include <fstream>
 #include <vector>
 #include <utility> // For std::pair
+// Butun ptrlari duzelt aminakoyayim
 
-FastDetector::FastDetector(const cv::Mat& image, const int& threshold, std::vector<PointPair> pattern, const int& descriptorSize){
+
+FastDetector::FastDetector(const cv::Mat& image, const int& threshold){
 
 	this->threshold = threshold;
 	this->grayscaleImage = image;
 	this->width = this->grayscaleImage.cols;
 	this->height = this->grayscaleImage.rows;
-	//this->range = std::make_pair(-15, 15); // Patch Range
-	this->comparisonPattern = pattern;
+
 	this->descriptorSize = descriptorSize;
-	//BRIEFinit();
+
 
 }
 
@@ -79,6 +80,10 @@ const bool FastDetector::isCorner(const int& y, const int& x) const {
 	if (brighter >= 3) {
 		isPbrighter = true;
 	}
+	if (brighter >= 3 || darker >= 3) {
+		return true;
+	}
+	return false;
 
 	if (isYmirrored) {
 		if (isRightCutset) {
@@ -110,16 +115,12 @@ void FastDetector::extractFeatures(std::vector<cv::KeyPoint>& keypoints) {
 			
 				const double harrisResponse = computeHarrisResponse(dX, dY);
 
-				if (harrisResponse >= 0.01) {
-					//const double currPatchAnglse = computeCentroidOrientation(x, y);
+				if (harrisResponse >= 100000) {
 					cv::KeyPoint keypoint;
 					keypoint.pt = cv::Point2f(x, y);
-					keypoint.size = 6;  // Size of Circle
-					//keypoint.angle = orientation;
+					keypoint.size = 6;  
 					keypoints.push_back(keypoint);
-					//if ((x >= range.second && x + range.second < width) && (y >= range.second && y + range.second < height)) {
-						//BRIEFDescriptor(256, x, y, 0); //Simultaneously Generate BRIEF descriptors for given keypoints in compatible patch regions, cuz why wouldnt I???
-					//}
+
 				}
 			}
 		}
@@ -129,6 +130,7 @@ void FastDetector::extractFeatures(std::vector<cv::KeyPoint>& keypoints) {
 }
 //https://www.cs.ubc.ca/~lowe/525/papers/calonder_eccv10.pdf
 // https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6126544
+/*
 void FastDetector::generateDescriptor(const int& nd, const int& x, const int& y, const double& angle) { // Generates pairs of points to compare for a BRIEF descriptor uniformally.
 
 	std::bitset<256> bits;
@@ -150,7 +152,7 @@ void FastDetector::generateDescriptor(const int& nd, const int& x, const int& y,
 	keypointDescriptors.push_back(bits); // Generate BRIEF descriptor given FAST feature points
 	// Ordering of keypoints is parallel to the generated keypoints so the order of descriptor patches is related to the patch created by the keypoint
 }
-
+*/
 
 const double FastDetector::gradX(const int& x, const int& y) const { // Gradient in X direction
 	// Sobel Kernel on interest point
@@ -162,10 +164,7 @@ const double FastDetector::gradX(const int& x, const int& y) const { // Gradient
 			(-2.0 / 8 * static_cast<double>(*grayscaleImage.ptr<uchar>(y, x - 1))) +
 			(2.0 / 8 * static_cast<double>(*grayscaleImage.ptr<uchar>(y, x + 1))));
 
-	if (gradient >= 1 || gradient <= -1) {
 
-		//std::cout << "ssss";
-	}
 	return gradient; // Return the computed gradient if within range
 }
 
@@ -179,10 +178,7 @@ const double FastDetector::gradY(const int& x, const int& y) const { // Gradient
 		(2.0/ 8 * static_cast<double>(*grayscaleImage.ptr<uchar>(y + 1, x))) +
 		(1.0/ 8 * static_cast<double>(*grayscaleImage.ptr<uchar>(y + 1, x + 1))));
 
-	if (gradient >= 1 || gradient <= -1) {
 
-		//std::cout << "ssss";
-	}
 	return gradient; //normalized gradient instead normalize harris cornerness response l8r
 }
 const double FastDetector::computeHarrisResponse(const double& Ix, const double& Iy) const {
@@ -208,38 +204,84 @@ static const int hammingDistance(const std::bitset<128>& desc1, const std::bitse
 }
 */
 const bool FastDetector::isDarker(const uchar& currPixel, const uchar& testPixel) const {
-	// Detect underflow without conversion or clamping
-	if (testPixel < threshold) {
-		return false;  // Underflow would happen, return false since currPixel cant be smaller than such a value
-	}
-	else {
-		return (testPixel - threshold > currPixel);  // Safe subtraction, no underflow
-	}
+
+	int adjustedCurrPixel = std::min(int(currPixel) + threshold, 255);
+	return (testPixel > adjustedCurrPixel);
 }
 
 const bool FastDetector::isBrighter(const uchar& currPixel, const uchar& testPixel) const {
-	// Detect overflow without conversion or clamping
-	if (testPixel > 255 - threshold) {
-		return false;  // Overflow would happen, return false since current pixel cant be larger than such a value
-	}
-	else {
-		return (testPixel + threshold < currPixel);  // Safe addition, no overflow
-	}
+
+	// Promote currPixel to int to avoid underflow before subtracting threshold
+	int adjustedCurrPixel = std::max(static_cast<int>(currPixel) - threshold, 0);
+	return (int(testPixel) < adjustedCurrPixel);
 }
  
-static const double getOrientation(double dX, double dY) {
-
-	double angle = atan2(dY, dX) * (180.0 / CV_PI);
-	if (angle < 0) {
-		angle += 360.0;
-	}
-	return angle;
-}
-
 // OpenCV does this differently by using sum of absolute differences and compares the result to a threshold, I followed the original proposal
 // Verifies the consistency of an arc in the Brescham circle by expanding from both sides until an undesirable value is detected, naive approach.
 const bool FastDetector::isValidArc(const int& startIndex, const int& y, const int& x, const bool& isPbrighter) const {
 
+	int leftIndex = startIndex; // decrement
+	int rightIndex = startIndex; // increment
+	int upperIndex = startIndex;
+	const uchar* currPixel = grayscaleImage.ptr<uchar>(y, x);
+	int count = 0;
+	int rightCount = 0;
+	int leftCount = 0;
+
+	bool stopDecrement = false;
+	bool stopIncrement = false;
+
+
+	for(int i = 0; i < 16; i++){ // general counter i < 9 upper bound because of arc but should quit for diff values if logic correct check with debugger
+
+		if (i > 4) {
+			
+		}
+
+		if (leftIndex - 1 < 0 || stopDecrement) { // should i start increment:
+			leftIndex++;
+			stopDecrement = true;
+		}
+		else {
+			leftIndex--;
+		}
+		if (rightIndex + 1 == 16 || stopIncrement) {
+			stopIncrement = true;
+			rightIndex--;
+		}
+		else {
+			rightIndex++;
+		}
+
+		
+
+		const uchar* leftPixel = grayscaleImage.ptr<uchar>(y + circle[leftIndex].y, x + circle[leftIndex].x);
+		const uchar* righttPixel = grayscaleImage.ptr<uchar>(y + circle[rightIndex].y, x + circle[rightIndex].x);
+
+
+		if (!(isBrighter(*currPixel, *leftPixel) && isPbrighter) || (isDarker(*currPixel, *leftPixel) && !isPbrighter) && i > 4) {
+			return false;
+		}
+		else{
+			//count++;
+			leftCount++;
+
+		}
+		if (!(isBrighter(*currPixel, *righttPixel) && isPbrighter) || (isDarker(*currPixel, *righttPixel) && !isPbrighter) && i > 4) {
+			return false;
+		}
+		else {
+			//count++;
+			rightCount++;
+		}
+		
+
+	
+
+	}
+
+	// Redo this shit
+	/* 
 	int iter = 1;
 	int clockWise = startIndex, counterClockWise = startIndex;
 	bool runClockwise = true;
@@ -297,6 +339,6 @@ const bool FastDetector::isValidArc(const int& startIndex, const int& y, const i
 
 		iter++;
 	}
-
+	*/
 	return false;
 }

@@ -54,16 +54,16 @@ const std::vector <std::bitset<N>> BRIEF<N>::generateDescriptor(std::vector<cv::
 	// this is all nonsense, just randomly sample for nd times (128,256,512)
 	int kpointSize = keypoints.size();
 	for (int i = 0; i < kpointSize; i++) {
-		const int x = static_cast<int>(keypoints.at(i).pt.x);
-		const int y = static_cast<int>(keypoints.at(i).pt.y);
+		const int x = static_cast<int>(keypoints[i].pt.x);
+		const int y = static_cast<int>(keypoints[i].pt.y);
 
 		for (int j = 0; j < N; j++) {
 			PointPair pairOfPts;
 			std::pair<int, int> point1;
 			std::pair<int, int> point2;
 
-			point1 = comparisonPattern.at(j).first;
-			point2 = comparisonPattern.at(j).second;
+			point1 = comparisonPattern[j].first;
+			point2 = comparisonPattern[j].second;
 
 			const uchar intensityA = *image.ptr<uchar>(y + point1.second, x + point1.first);
 			const uchar intensityB = *image.ptr<uchar>(y + point2.second, x + point2.first);

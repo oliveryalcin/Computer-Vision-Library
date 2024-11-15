@@ -18,7 +18,7 @@
     <ClCompile Include="FastDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SIFTDetector.cpp">
+    <ClCompile Include="SIFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -37,7 +37,7 @@
     <ClInclude Include="FastDetector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SIFTDetector.h">
+    <ClInclude Include="SIFT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BRIEF.h">

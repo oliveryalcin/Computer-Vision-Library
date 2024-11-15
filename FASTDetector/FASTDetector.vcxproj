@@ -150,7 +150,7 @@
   <ItemGroup>
     <ClCompile Include="FastDetector.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SIFTDetector.cpp" />
+    <ClCompile Include="SIFT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Downloads\1.png" />
@@ -159,7 +159,7 @@
   <ItemGroup>
     <ClInclude Include="BRIEF.h" />
     <ClInclude Include="FastDetector.h" />
-    <ClInclude Include="SIFTDetector.h" />
+    <ClInclude Include="SIFT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
