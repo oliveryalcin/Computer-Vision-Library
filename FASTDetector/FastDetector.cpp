@@ -1,7 +1,6 @@
 #include "FastDetector.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
-#include <omp.h>
 #include <vector>
 #include <random>
 #include <string.h>
